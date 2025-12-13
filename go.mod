@@ -2,7 +2,7 @@ module gen
 
 go 1.25.5
 
-tool github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen
+// tool github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen
 
 require (
 	github.com/dprotaso/go-yit v0.0.0-20220510233725-9ba8df137936 // indirect
