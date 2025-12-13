@@ -4,19 +4,72 @@
 package api
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/labstack/echo/v4"
+	"github.com/oapi-codegen/runtime"
 )
+
+// Error defines model for Error.
+type Error struct {
+	Message string `json:"message"`
+}
+
+// GetPokemonResponse defines model for GetPokemonResponse.
+type GetPokemonResponse = []Pokemon
 
 // Pokemon defines model for Pokemon.
 type Pokemon struct {
-	Name string `json:"name"`
+	// Abilities Abilities
+	Abilities     *[]string `json:"abilities"`
+	BaseAttack    *int64    `json:"base_attack"`
+	BaseDefense   *int64    `json:"base_defense"`
+	BaseHp        *int64    `json:"base_hp"`
+	BaseSpAttack  *int64    `json:"base_sp_attack"`
+	BaseSpDefense *int64    `json:"base_sp_defense"`
+	BaseSpeed     *int64    `json:"base_speed"`
+	Description   *string   `json:"description"`
+
+	// EggGroups Egg groups
+	EggGroups *[]string `json:"egg_groups"`
+
+	// EvolutionNext Next evolution names
+	EvolutionNext *[]string `json:"evolution_next"`
+
+	// EvolutionPrev Previous evolution names
+	EvolutionPrev *[]string `json:"evolution_prev"`
+	Gender        *string   `json:"gender"`
+	Height        *string   `json:"height"`
+	HiresUrl      *string   `json:"hires_url"`
+	Id            *int64    `json:"id"`
+	NameChinese   *string   `json:"name_chinese"`
+	NameEnglish   *string   `json:"name_english"`
+	NameFrench    *string   `json:"name_french"`
+	NameJapanese  *string   `json:"name_japanese"`
+	Species       *string   `json:"species"`
+	SpriteUrl     *string   `json:"sprite_url"`
+	ThumbnailUrl  *string   `json:"thumbnail_url"`
+
+	// Types Pokémon types
+	Types  *[]string `json:"types"`
+	Weight *string   `json:"weight"`
+}
+
+// GetPokemonParams defines parameters for GetPokemon.
+type GetPokemonParams struct {
+	// Offset Number of records to skip
+	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit Maximum number of records to return
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Return Hello World
+	// Get a list of Pokémon
 	// (GET /pokemon)
-	GetPokemon(ctx echo.Context) error
+	GetPokemon(ctx echo.Context, params GetPokemonParams) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -28,8 +81,24 @@ type ServerInterfaceWrapper struct {
 func (w *ServerInterfaceWrapper) GetPokemon(ctx echo.Context) error {
 	var err error
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetPokemonParams
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", ctx.QueryParams(), &params.Offset)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+	}
+
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetPokemon(ctx)
+	err = w.Handler.GetPokemon(ctx, params)
 	return err
 }
 

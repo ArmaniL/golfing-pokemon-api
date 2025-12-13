@@ -12,23 +12,185 @@ servers:
 paths:
   /pokemon:
     get:
-      summary: Return Hello World
+      summary: Get a list of Pokémon
       operationId: getPokemon
+      parameters:
+        - name: offset
+          in: query
+          description: Number of records to skip
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
+
+        - name: limit
+          in: query
+          description: Maximum number of records to return
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 20
+
       responses:
         "200":
-          description: A JSON object with pokemon name.
+          description: A list of Pokémon
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Pokemon"
+                $ref:  "#/components/schemas/GetPokemonResponse"
+                  
+
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 
 components:
   schemas:
     Pokemon:
       type: object
-      required:
-        - name
       properties:
-        name:
+        id:
+          type: integer
+          format: int64
+          nullable: true
+
+        name_english:
           type: string
-          example: pikachu
+          nullable: true
+
+        name_japanese:
+          type: string
+          nullable: true
+
+        name_chinese:
+          type: string
+          nullable: true
+
+        name_french:
+          type: string
+          nullable: true
+
+        types:
+          type: array
+          items:
+            type: string
+          nullable: true
+          description: "Pokémon types"
+
+        base_hp:
+          type: integer
+          format: int64
+          nullable: true
+
+        base_attack:
+          type: integer
+          format: int64
+          nullable: true
+
+        base_defense:
+          type: integer
+          format: int64
+          nullable: true
+
+        base_sp_attack:
+          type: integer
+          format: int64
+          nullable: true
+
+        base_sp_defense:
+          type: integer
+          format: int64
+          nullable: true
+
+        base_speed:
+          type: integer
+          format: int64
+          nullable: true
+
+        species:
+          type: string
+          nullable: true
+
+        description:
+          type: string
+          nullable: true
+
+        evolution_next:
+          type: array
+          items:
+            type: string
+          nullable: true
+          description: "Next evolution names"
+
+        evolution_prev:
+          type: array
+          items:
+            type: string
+          nullable: true
+          description: "Previous evolution names"
+
+        height:
+          type: string
+          nullable: true
+
+        weight:
+          type: string
+          nullable: true
+
+        egg_groups:
+          type: array
+          items:
+            type: string
+          nullable: true
+          description: "Egg groups"
+
+        abilities:
+          type: array
+          items:
+            type: string
+          nullable: true
+          description: "Abilities"
+
+        gender:
+          type: string
+          nullable: true
+
+        sprite_url:
+          type: string
+          format: uri
+          nullable: true
+
+        thumbnail_url:
+          type: string
+          format: uri
+          nullable: true
+
+        hires_url:
+          type: string
+          format: uri
+          nullable: true
+
+
+    GetPokemonResponse:
+        type: array
+        items:
+          $ref: "#/components/schemas/Pokemon"
+
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
