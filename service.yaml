@@ -1,0 +1,34 @@
+openapi: "3.0.3"
+
+info:
+  title: The Sample Service API
+  version: 0.0.1
+  description: Send errors to Rollbar or Sentry
+
+servers:
+  - url: http://localhost:8080/
+    description: A public instance which anyone can hit to generate sample data.
+
+paths:
+  /pokemon:
+    get:
+      summary: Return Hello World
+      operationId: getPokemon
+      responses:
+        "200":
+          description: A JSON object with pokemon name.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pokemon"
+
+components:
+  schemas:
+    Pokemon:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: pikachu
