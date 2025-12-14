@@ -7,19 +7,17 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/labstack/echo/v4"
-)
 
-// optional code omitted
+	"github.com/jackc/pgx/v5/pgxpool"
+)
 
 type Server struct {
 	db *db.Queries
 }
 
 func NewServer() Server {
-
 	ctx := context.Background()
 
 	dsn := os.Getenv("DATABASE_URL")
@@ -27,13 +25,13 @@ func NewServer() Server {
 		log.Fatal("DATABASE_URL not set")
 	}
 
-	conn, err := pgx.Connect(ctx, dsn)
+	pool, err := pgxpool.New(ctx, dsn)
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(err)
 	}
 
 	return Server{
-		db: db.New(conn),
+		db: db.New(pool),
 	}
 }
 

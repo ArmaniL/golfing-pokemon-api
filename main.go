@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -13,6 +14,8 @@ func main() {
 	server := api.NewServer()
 
 	e := echo.New()
+
+	e.Use(middleware.Recover())
 
 	api.RegisterHandlers(e, server)
 
