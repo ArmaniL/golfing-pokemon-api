@@ -39,11 +39,20 @@ func NewServer() Server {
 
 func (s Server) GetPokemon(ctx echo.Context, params GetPokemonParams) error {
 
+	offset := int32(0)
+	limit := int32(20)
+
+	if params.Offset != nil {
+		offset = *params.Offset
+	}
+	if params.Limit != nil {
+		limit = *params.Limit
+	}
 	pokemonList, dbError := s.db.ListPokemon(
 		ctx.Request().Context(),
 		db.ListPokemonParams{
-			Offset: *params.Offset,
-			Limit:  *params.Limit,
+			Offset: offset,
+			Limit:  limit,
 		},
 	)
 
