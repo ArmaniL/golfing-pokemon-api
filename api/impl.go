@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/labstack/echo/v4"
@@ -24,8 +25,18 @@ func NewServer() Server {
 	if dsn == "" {
 		log.Fatal("DATABASE_URL not set")
 	}
+	poolConfig, err := pgxpool.ParseConfig(dsn)
+	if err != nil {
+		log.Fatalf("Unable to parse database URL: %v\n", err)
+	}
 
-	pool, err := pgxpool.New(ctx, dsn)
+	poolConfig.MaxConns = int32(50)
+	poolConfig.MinConns = int32(10)
+	poolConfig.MaxConnLifetime = time.Hour
+	poolConfig.MaxConnIdleTime = time.Minute * 30
+
+	pool, err := pgxpool.NewWithConfig(ctx, poolConfig)
+
 	if err != nil {
 		log.Fatal(err)
 	}
